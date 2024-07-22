@@ -1,6 +1,6 @@
-from ..measurements import Measurement
+from fivesafe.labels import LABELS
 
-class Track(Measurement):
+class Track():
     def __init__(
         self, 
         xy: tuple, 
@@ -25,10 +25,8 @@ class Track(Measurement):
         return f'Track id: {self.id},  \
             detection_id: {self.detection_id}, position: {self.xy}, label_id: {self.label_id}'
     
+    def label(self) -> str:
+        return LABELS[self.label_id]
+
     def xywh(self):
         return self.xy[0], self.xy[1], self.width, self.height
-    
-    def get_dict(self):
-        output = super.get_dict()
-        output["detection_id"] = self.detection_id
-        return output

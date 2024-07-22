@@ -23,10 +23,10 @@ class PositionEstimation:
             self.H = np.array(json.load(file))
         self.scale_factor = scale_factor
 
-    def transform(self, tracks, detections):
+    def transform(self, tracks):
         """ Main Function Call for Fivesafe application. Calculate GCP for every track. """
         for track in tracks:
-            world_position = self.calculate_ground_contact_point(track.label(), track.xywh())
+            world_position = self.calculate_ground_contact_point(track.label(), track.xywh)
             track.xy = (world_position[0], world_position[1])
         return tracks
 
@@ -38,13 +38,7 @@ class PositionEstimation:
         if obj_class in ('pedestrian'):
             return self._calculate_gcp_midpoint(bb)
         else:
-            # rotated_bbox = self._get_rotated_bbox(mask)
-            x1, y1, x2, y2 = bb[0], bb[1], bb[2], bb[3]
-            p1 = [x1, y1]
-            p2 = [x2, y2]
-            p3 = [x1, y2]
-            p4 = [x2, y1]
-            rotated_bbox = np.array([p1, p2, p3, p4])
+            rotated_bbox = self._get_rotated_bbox(bb, 0.0)
             bottom_edge_img, top_edge_img = self._find_bottom_top_edge(rotated_bbox)
             bottom_edge_world = self._transform_pts_image_to_world(bottom_edge_img)
             top_edge_world = self._transform_pts_image_to_world(top_edge_img)
@@ -192,10 +186,10 @@ class PositionEstimation:
         midpoint_y = (edge[0][1] + edge[1][1]) / 2
         return np.array([midpoint_x, midpoint_y])
 
-    def _get_rotated_bbox(self, mask):
-        """ Given a mask, return rotated BBOX """
-        min_rect = cv2.minAreaRect(np.array(mask))
-        angle_bb = min_rect[2]
-        min_rect_pts = cv2.boxPoints(min_rect)
+    def _get_rotated_bbox(self, xywh, angle):
+        """ Given xywh and angle, return rotated BBOX """
+        x, y, w, h = xywh
+        rotated_rect = ((x, y), (w, h), angle)
+        min_rect_pts = cv2.boxPoints(rotated_rect)
         min_rect_pts = np.int0(min_rect_pts)
         return min_rect_pts

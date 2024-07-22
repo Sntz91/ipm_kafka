@@ -2,7 +2,7 @@ from kafka import KafkaConsumer
 import json
 import cv2
 
-INPUT_TOPIC = 'world_tracks_pp1_2'
+INPUT_TOPIC = 'world_tracks_pp1_1'
 SERVER = '17.11.1.21:19095'
 
 if __name__ == '__main__':

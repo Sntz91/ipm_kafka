@@ -1,8 +1,7 @@
 import numpy as np
-from ..measurements import Measurements
 from .track import Track
 
-class Tracks(Measurements):
+class Tracks(list):
     def __init__(self):
         super().__init__()
 
