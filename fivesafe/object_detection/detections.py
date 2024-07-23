@@ -1,6 +1,6 @@
 import numpy as np
 
-class Detections(list):
+class Detections(dict):
     def __init__(self) -> None:
         super().__init__()
 
@@ -10,16 +10,17 @@ class Detections(list):
         # super().__setitem__(item, value)
 
     def append_measurement(self, measurement) -> None:
-        measurement.id = len(self)+1
-        self.append(measurement)
+        id_ = len(self)+1
+        measurement.id = id_
+        self[id_] = measurement
 
     def to_numpy(self) -> np.ndarray:
         """ measurements to numpy: [x,y,x,y,score,id,label_id] """
         out = []
-        for measurement in self:
-            x, y, w, h = measurement.xywh
+        for _, measurement in self.items():
+            x1, y1, x2, y2 = measurement.xyxy
             out.append([
-                x, y, w, h,
+                x1, y1, x2, y2,
                 measurement.score,
                 int(measurement.id),
                 measurement.label_id

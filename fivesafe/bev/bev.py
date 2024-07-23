@@ -23,22 +23,24 @@ class PositionEstimation:
             self.H = np.array(json.load(file))
         self.scale_factor = scale_factor
 
-    def transform(self, tracks):
+    def transform(self, tracks, detections):
         """ Main Function Call for Fivesafe application. Calculate GCP for every track. """
         for track in tracks:
-            world_position = self.calculate_ground_contact_point(track.label(), track.xywh)
+            rotated_bbox = detections[track.detection_id].xyxy_rotated
+            # world_position = self.calculate_ground_contact_point(track.label(), track.xywh())
+            world_position = self.calculate_ground_contact_point(track.label(), track.xywh(), rotated_bbox)
             track.xy = (world_position[0], world_position[1])
         return tracks
 
     def transform_w_rotated_bbox(self, tracks, rotated_bbox):
         pass
 
-    def calculate_ground_contact_point(self, obj_class, bb, debug=False):
+    def calculate_ground_contact_point(self, obj_class, bb, rotated_bbox, debug=False):
         """ Calculate Ground Contact Point """
         if obj_class in ('pedestrian'):
             return self._calculate_gcp_midpoint(bb)
         else:
-            rotated_bbox = self._get_rotated_bbox(bb, 0.0)
+            # rotated_bbox = self._get_rotated_bbox(bb, 0.0)
             bottom_edge_img, top_edge_img = self._find_bottom_top_edge(rotated_bbox)
             bottom_edge_world = self._transform_pts_image_to_world(bottom_edge_img)
             top_edge_world = self._transform_pts_image_to_world(top_edge_img)
