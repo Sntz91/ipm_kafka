@@ -136,6 +136,5 @@ def main_debug():
         producer.send(OUTPUT_TOPIC, json.dumps(world_tracks.to_json()).encode('utf-8'))
     consumer.close()
 
-
 if __name__ == '__main__': 
     main_debug()
